@@ -5,10 +5,11 @@ type Props = {
     lessons: ILesson[],
     className?: string,
     onStartMeet?: (id: string) => Promise<void>,
-    teacher: boolean,
+    owner: boolean,
+    onDeleteLesson: (id: string) => Promise<void>,
 }
 
-export default function Lessons({ lessons, className, onStartMeet, teacher }: Props) {
+export default function Lessons({ lessons, className, onStartMeet, onDeleteLesson, owner }: Props) {
 
   return (
     <div className="w-full h-full mt-5 overflow-y-auto ">
@@ -19,7 +20,8 @@ export default function Lessons({ lessons, className, onStartMeet, teacher }: Pr
                     lesson={lesson} 
                     className={className}
                     onStartMeet={onStartMeet}
-                    teacher={teacher}
+                    onDeleteLesson={onDeleteLesson}
+                    owner={owner}
                 />
             )
         })}

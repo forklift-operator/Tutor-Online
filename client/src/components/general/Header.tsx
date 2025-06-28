@@ -23,6 +23,11 @@ export default function Header({ user, onLogout}: Props) {
         {user ? (
           <>
             <Button
+                variant={window.location.pathname === '/courses' ? 'secondary' : 'default'}
+                onClick={() => navigate('/courses')}>
+                  Courses
+            </Button>
+            <Button
                 variant={window.location.pathname === '/teachers' ? 'secondary' : 'default'}
                 onClick={() => navigate('/teachers')}>
                   Teachers

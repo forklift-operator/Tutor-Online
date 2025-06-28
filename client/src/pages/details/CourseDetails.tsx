@@ -15,10 +15,11 @@ type Props = {
     onFetchLessons: (entityType: string, filter?: Record<string, any>) => Promise<ILesson[]>,
     onUpdate?: (entityType: string, updated: ICourse) => Promise<ICourse>,
     onCreateLesson: (entityType: string, entity: Omit<ILesson, '_id'>) => Promise<ILesson>,
+    onDeleteLesson: (entityType: string, id: string) => Promise<ILesson>,
     onStartMeet?: (id: string) => Promise<void>;
 }
 
-export default function CourseDetails({ onFetchCourse, onFetchLessons, onUpdate, onCreateLesson, onStartMeet}: Props) {
+export default function CourseDetails({ onFetchCourse, onFetchLessons, onUpdate, onCreateLesson, onDeleteLesson, onStartMeet}: Props) {
     const { id } = useParams<string>();
     const [course, setCourse] = useState<ICourse | null>(null);
     const [lessons, setLessons] = useState<ILesson[]>([])
@@ -31,6 +32,15 @@ export default function CourseDetails({ onFetchCourse, onFetchLessons, onUpdate,
         try {
             const newLesson = await onCreateLesson('lesson', lesson);
             setLessons(prevLessons => [...prevLessons, newLesson]);
+        } catch (e) {
+            console.error((e as Error).message);
+        }
+    }
+
+    const deleteLesson = async (lessonId: string) => {
+        try {
+            const newLesson = await onDeleteLesson('lesson', lessonId);
+            setLessons(lessons.filter(lesson => lesson._id.toString() !== lessonId ));
         } catch (e) {
             console.error((e as Error).message);
         }
@@ -124,8 +134,10 @@ export default function CourseDetails({ onFetchCourse, onFetchLessons, onUpdate,
         
         <div className="flex-2 flex flex-col">
             <p className="text-3xl mb-3">Lessons</p>
-            <CreateLessonModal onCreateLesson={createLesson} courseId={course._id} teacherId={myId}/>
-            <Lessons className="bg-background " lessons={lessons} onStartMeet={onStartMeet} teacher/>
+            {owner &&
+                <CreateLessonModal onCreateLesson={createLesson} courseId={course._id} teacherId={myId}/>
+            }
+            <Lessons className="bg-background " lessons={lessons} onStartMeet={onStartMeet} owner={owner} onDeleteLesson={deleteLesson}/>
         </div>
     </div>
     

@@ -14,13 +14,11 @@ type Props = {
 
 export default function MyCoursesTeacher({ onFetchCourses, onDelete, onCreate }: Props) {
   const [courses, setCourses] = useState<ICourse[]>([]);
-  const [loading, setLoading] = useState(true)
   const myId = (JSON.parse(Cookies.get('user') || '') as IUser)._id;
 
   const fetch = async () => {
     try {
-      const courses = await onFetchCourses('course', { teacher:  myId});
-      setLoading(false);
+      const courses = await onFetchCourses('course', { teacher:  myId.toString()});
       setCourses(courses);
     } catch (e) {
       console.error((e as Error).message);

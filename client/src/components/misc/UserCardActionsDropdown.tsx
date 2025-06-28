@@ -6,16 +6,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useNavigate } from "react-router"
 
 type Props = {
     onDelete: (id: string) => Promise<void>,
-    courseId: string,
+    userId: string,
     className?: string
 }
 
-export function CourseCardActionsDropdown({courseId, onDelete, className} :Props) {
-    const navigate = useNavigate();
+export function UserCardActionsDropdown({userId, onDelete, className} :Props) {
   return (
     <div className={`flex ${className}`}>
 
@@ -26,10 +24,10 @@ export function CourseCardActionsDropdown({courseId, onDelete, className} :Props
       <DropdownMenuContent className="bg-transparent p-0 min-w-0" align="start">
         <DropdownMenuGroup className="bg-transparent p-0 ">
           <DropdownMenuItem className="p-0 px-0 mb-1">
-            <Button onClick={() => onDelete(courseId)} variant={'destructive'} className="w-full">Delete</Button>
+            <Button onClick={() => onDelete(userId)} variant={'destructive'} className="w-full">Delete</Button>
           </DropdownMenuItem>
           <DropdownMenuItem className="p-0 px-0">
-            <Button onClick={() => navigate(`/courses/${courseId}/edit`)} className="w-full">Edit</Button>
+            <Button className="w-full">Edit</Button>
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

@@ -7,7 +7,9 @@ import { LessonModel } from '../../db/model/lessonModel';
 const userRouter = express.Router();
 userRouter.get('/teachers', validateToken, async (req, res): Promise<any> => {
     try {
-        const users = await UserModel.find({});
+        const query = req.query.name as string;
+        const filter = query ? { username: { $regex: query, $options: 'i' } } : {};
+        const users = await UserModel.find(filter);
         const teachers = users.filter(user => user.roles.includes('teacher'));
         return res.status(200).json(teachers);
     } catch (e) {
@@ -25,9 +27,16 @@ userRouter.get('/teachers', validateToken, async (req, res): Promise<any> => {
     }
 }).get('/courses', validateToken, checkRole('teacher'), async (req, res): Promise<any> => {
     try {
-        const courses = await CourseModel.find(req.query);
+        const queryName = req.query.name as string;
+        let filter = {}
+        if (queryName){
+            filter = queryName ? { name: { $regex: queryName, $options: 'i' } } : {};
+        }else filter = req.query;
+        console.log(req.query);
+        
+        
+        const courses = await CourseModel.find(filter);
         return res.status(200).json(courses);
-        // make it work with the htto response
     } catch (e) {
         console.error((e as Error).message);
         return res.status(500).json({ message: 'Internal server error' });
@@ -77,6 +86,14 @@ userRouter.get('/teachers', validateToken, async (req, res): Promise<any> => {
     try {
         const newLesson = await LessonModel.create(req.body);
         return res.status(200).json(newLesson);
+    } catch (e) {
+        console.error((e as Error).message);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+}).delete('/lessons/:lessonId', validateToken, checkRole('teacher'), async (req, res): Promise<any> => {
+    try {
+        const deleted = await LessonModel.deleteOne({ _id: req.params.lessonId });
+        return res.status(200).json(deleted);
     } catch (e) {
         console.error((e as Error).message);
         return res.status(500).json({ message: 'Internal server error' });

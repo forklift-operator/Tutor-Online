@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react'
 import UserCard from '../../components/cards/UserCard';
 import Cookies from 'js-cookie';
 import type { IUser } from '../../../../server/src/db/model/userModel';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 
 type Props = {
-    fetchUsers: (entityType: string) => Promise<IUser[]>,
+    fetchUsers: (entityType: string, filter?: Record<string, any>) => Promise<IUser[]>,
     handleDelete: (entityType: string ,userId: string) => Promise<IUser>,
     handleEdit?: (updatedUser: IUser) => Promise<void>,
 }
@@ -15,16 +17,15 @@ export default function Users({ fetchUsers, handleDelete }: Props) {
     const [loading, setLoading] = useState(true)
     const myId = (JSON.parse(Cookies.get('user') || '') as IUser)._id;
     
-    const fetch = async () => {
+    const fetch = async (filter?: Record<string, any>) => {
         try {
-            const users = await fetchUsers('user');
+            const users = await fetchUsers('user', filter);
             setLoading(false);
             setUsers(users);
         } catch (e) {
             console.error((e as Error).message);
         }
     }
-
 
     const deleteUser = async (userId: string): Promise<void> => {
         try {
@@ -46,26 +47,34 @@ export default function Users({ fetchUsers, handleDelete }: Props) {
     
   return (
       <div className="Users">
-        <h2>Users</h2>
-        <button onClick={() => fetch()}>Refresh</button>
-        {loading ? 
-            <h2>Loading...</h2>
-            :
-            <div className="user-cards overflow-y-auto">
-                {users.map((user: IUser) => {
-                    return (
-                        <UserCard 
-                        key={user._id.toString()}
-                        user={user}
-                        myId={myId.toString()}
-                        adminView={true}
-                        handleDelete={deleteUser}
-                        // handleEdit={handleEdit}
-                        />
-                    );
-                })}
-            </div>
-        }
+        <div className="flex flex-row gap-4">
+            <Input
+                onChange={e => {
+                    const value = e.target.value;
+                    if (value.trim() === "") {
+                        fetch();
+                    } else {
+                        fetch({ name: value });
+                    }
+                }}
+                placeholder='Search by name...'
+            />
+            <Button className='mb-5' onClick={() => fetch()}>Refresh</Button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {users.map((user: IUser) => {
+                return (
+                    <UserCard 
+                    key={user._id.toString()}
+                    user={user}
+                    myId={myId.toString()}
+                    adminView={true}
+                    handleDelete={deleteUser}
+                    // handleEdit={handleEdit}
+                    />
+                );
+            })}
+        </div>
     </div>
   )
 }

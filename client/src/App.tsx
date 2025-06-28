@@ -25,6 +25,7 @@ import MyCoursesTeacher from "./pages/explore/MyCoursesTeacher.js";
 import PeerService from "./services/peerService.js";
 import ValidateMeet from "./pages/meeting/ValidateMeet.js";
 import type { IUser } from "../../server/src/db/model/userModel.js";
+import Courses from "./pages/explore/Courses.js";
 
 function Home() {
   return(
@@ -144,14 +145,15 @@ export default function App() {
 
           {/* general */}
           <Route element={<ProtectedRoute user={user!} apiClient={apiClient}/>}>
+            <Route path='courses' element={ <Courses fetchCourses={fetchEntitys}/>} />
             <Route path='teachers' element={ <Teachers fetchTeachers={fetchEntitys}/>} />
             <Route path='teachers/:id' element={<UserDetails onFetch={fetchEntity} onUpdate={updateEntity} view='USER' />} />
+            <Route path="/courses/:id" element={ <CourseDetails onFetchCourse={fetchEntity} onDeleteLesson={deleteEntity} onFetchLessons={fetchEntitys} onCreateLesson={createEntity} onUpdate={updateEntity} onStartMeet={handleStartMeet}/> } />
           </Route>
 
           {/* teacher */}
           <Route element={<ProtectedRoute user={user!} isAllowed={!!user && user.roles.includes('teacher')} apiClient={apiClient}/>}>
             <Route path="/courses/my" element={ <MyCoursesTeacher onFetchCourses={fetchEntitys} onCreate={createEntity} onDelete={deleteEntity}/> } />
-            <Route path="/courses/:id" element={ <CourseDetails onFetchCourse={fetchEntity} onFetchLessons={fetchEntitys} onCreateLesson={createEntity} onUpdate={updateEntity} onStartMeet={handleStartMeet}/> } />
           </Route>
 
           {/* <Route path="/meet/:lessonId" element={<ValidateMeet />} /> */}

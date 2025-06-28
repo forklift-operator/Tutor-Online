@@ -15,7 +15,6 @@ type Props = {
 export default function CourseCard({course, onDelete, view='STUDENT' }: Props) {
   return (
     
-    <div className="CourseCard">
         <Card className='bg-background text-foreground pt-0 overflow-hidden'>
             <div className="relative w-full">
 
@@ -51,11 +50,10 @@ export default function CourseCard({course, onDelete, view='STUDENT' }: Props) {
             <Label className='px-5'>Students enrolled: {course.students?.length}</Label>
 
             <Link className='px-5' to={`/courses/${course._id.toString()}`}>More...</Link>
+            {course.currentLessonId && 
+                <Link className={'join'} to={`/meet/${course.currentLessonId.toString()}`}>Join latest lesson</Link>
+            }
         </Card>
         
-        {course.currentLessonId && 
-            <Link className={'join'} to={`/meet/${course.currentLessonId.toString()}`}>Join latest lesson</Link>
-        }
-    </div>
   )
 }

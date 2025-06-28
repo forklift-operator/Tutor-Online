@@ -7,7 +7,9 @@ const adminRouter = express.Router();
 
 adminRouter.get('/users', validateToken, checkRole('admin'), async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const users = await UserModel.find({});
+        const query = req.query.name as string;
+        const filter = query ? { username: { $regex: query, $options: 'i' } } : {};
+        const users = await UserModel.find(filter);
         res.status(200).json(users);
     } catch (e) {
         next(e);

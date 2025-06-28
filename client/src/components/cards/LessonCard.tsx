@@ -9,10 +9,10 @@ type Props = {
     
     lesson: ILesson;
     className?: string;
-    teacher: boolean;
+    owner: boolean;
 }
 
-export default function LessonCard({lesson, className, onDeleteLesson, onStartMeet, teacher=false}: Props) {
+export default function LessonCard({lesson, className, onDeleteLesson, onStartMeet, owner=false}: Props) {
 
   const navigate = useNavigate();
 
@@ -39,12 +39,13 @@ export default function LessonCard({lesson, className, onDeleteLesson, onStartMe
             {lesson.isOpen &&
               <Button onClick={() => navigate(`/meet/${lesson._id.toString()}`)}>Join meet</Button>
             }     
-            {teacher && !lesson.isOpen &&
+            {owner && !lesson.isOpen &&
               <Button variant={'outline'} onClick={() => start()}>Start meeting</Button>
             }
             <Button variant={'outline'}>Notes</Button>
-
-            <Button variant={'destructive'}>Delete</Button>
+            {owner && onDeleteLesson &&
+              <Button onClick={() => onDeleteLesson(lesson._id.toString())} variant={'destructive'}>Delete</Button>
+            } 
 
         </CardAction>
     </Card>
