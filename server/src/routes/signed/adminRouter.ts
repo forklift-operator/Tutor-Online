@@ -5,7 +5,7 @@ import { Request, Response, NextFunction } from 'express';
 
 const adminRouter = express.Router();
 
-adminRouter.get('/users', validateToken, checkRole('admin'), async (req: Request, res: Response, next: NextFunction) => {
+adminRouter.get('/users', validateToken, checkRole(['admin']), async (req: Request, res: Response, next: NextFunction) => {
     try {
         const query = req.query.name as string;
         const filter = query ? { username: { $regex: query, $options: 'i' } } : {};
@@ -14,7 +14,7 @@ adminRouter.get('/users', validateToken, checkRole('admin'), async (req: Request
     } catch (e) {
         next(e);
     }
-}).delete('/users/:userId', validateToken, checkRole('admin'), async (req: Request, res: Response, next: NextFunction) => {
+}).delete('/users/:userId', validateToken, checkRole(['admin']), async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.params.userId;
         const deleted = await UserModel.deleteOne({ _id: userId });

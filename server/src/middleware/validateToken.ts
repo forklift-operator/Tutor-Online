@@ -49,8 +49,9 @@ const validateToken = async (req: Request, res: Response, next: NextFunction): P
     }
 }
 
-const checkRole = (role: string) => (req: Request, res: Response, next: NextFunction): any => {
-    if (!(req.cookies.user as IUser).roles.includes(role)) {
+const checkRole = (roles: string[]) => (req: Request, res: Response, next: NextFunction): any => {
+    const user = req.cookies.user as IUser;
+    if (!user.roles.some(uRole => roles.includes(uRole))) {
         return res.status(401).json({ message: 'Unauthorized role' });
     }
     return next();

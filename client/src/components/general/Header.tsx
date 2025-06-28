@@ -3,13 +3,17 @@ import {
 } from "react-router";
 import { Button } from "../ui/button";
 import type { IUser } from "../../../../server/src/db/model/userModel";
+import type { Credentials } from "@/common/commonTypes";
+import Login from "@/pages/auth/Login";
 
 type Props = {
-  user: IUser | null;
-  onLogout: () => void;
+    user: IUser | null;
+    onLogout: () => void;
+    onLogin: (credentials: Credentials) => Promise<void>;
+    onRegister: (user: Omit<IUser, '_id'>) => Promise<void>,
 }
 
-export default function Header({ user, onLogout}: Props) {
+export default function Header({ user, onLogout, onLogin, onRegister}: Props) {
 
   const navigate = useNavigate();
 
@@ -49,11 +53,7 @@ export default function Header({ user, onLogout}: Props) {
           </>
         ) : (
           <>
-            <Button 
-                variant={window.location.pathname === '/login' ? 'secondary' : 'default'}
-                onClick={() => navigate('/login')}>
-                  Login
-            </Button>
+            <Login onLogin={onLogin}/>
             <Button 
                 variant={window.location.pathname === '/register' ? 'secondary' : 'default'}
                 onClick={() => navigate('/register')}>

@@ -89,7 +89,7 @@ authRouter.post('/login', async (req, res): Promise<any> => {
 
     return res.status(200).json({ message: 'Logout successfull' })
 
-}).post('/validate-meet', validateToken, checkRole('student'), async (req, res): Promise<any> => {
+}).post('/validate-meet', validateToken, checkRole(['student', 'admin']), async (req, res): Promise<any> => {
     
     try {
         if (!ObjectId.isValid(req.body.id)) return res.status(404).json({message: 'Lesson id not valid'});  

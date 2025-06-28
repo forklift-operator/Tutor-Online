@@ -25,23 +25,23 @@ userRouter.get('/teachers', validateToken, async (req, res): Promise<any> => {
         console.error((e as Error).message);
         return res.status(500).json('Internal server error')
     }
-}).get('/courses', validateToken, checkRole('teacher'), async (req, res): Promise<any> => {
+}).get('/courses', validateToken, async (req, res): Promise<any> => {
     try {
         const queryName = req.query.name as string;
         let filter = {}
-        if (queryName){
+        if (queryName) {
             filter = queryName ? { name: { $regex: queryName, $options: 'i' } } : {};
-        }else filter = req.query;
+        } else filter = req.query;
         console.log(req.query);
-        
-        
+
+
         const courses = await CourseModel.find(filter);
         return res.status(200).json(courses);
     } catch (e) {
         console.error((e as Error).message);
         return res.status(500).json({ message: 'Internal server error' });
     }
-}).post('/courses', validateToken, checkRole('teacher'), async (req, res): Promise<any> => {
+}).post('/courses', validateToken, checkRole(['teacher']), async (req, res): Promise<any> => {
     try {
         const newCourse = await CourseModel.create(req.body);
         return res.status(200).json(newCourse);
@@ -58,7 +58,7 @@ userRouter.get('/teachers', validateToken, async (req, res): Promise<any> => {
         console.error((e as Error).message);
         return res.status(500).json({ message: "Internal server error" })
     }
-}).delete('/courses/:courseId', validateToken, checkRole('teacher'), async (req, res): Promise<any> => {
+}).delete('/courses/:courseId', validateToken, checkRole(['teacher']), async (req, res): Promise<any> => {
     try {
         const deleted = await CourseModel.deleteOne({ _id: req.params.courseId });
         return res.status(200).json(deleted);
@@ -82,7 +82,7 @@ userRouter.get('/teachers', validateToken, async (req, res): Promise<any> => {
         console.error((e as Error).message);
         return res.status(500).json({ message: 'Internal server error' });
     }
-}).post('/lessons', validateToken, checkRole('teacher'), async (req, res): Promise<any> => {
+}).post('/lessons', validateToken, checkRole(['teacher']), async (req, res): Promise<any> => {
     try {
         const newLesson = await LessonModel.create(req.body);
         return res.status(200).json(newLesson);
@@ -90,7 +90,7 @@ userRouter.get('/teachers', validateToken, async (req, res): Promise<any> => {
         console.error((e as Error).message);
         return res.status(500).json({ message: 'Internal server error' });
     }
-}).delete('/lessons/:lessonId', validateToken, checkRole('teacher'), async (req, res): Promise<any> => {
+}).delete('/lessons/:lessonId', validateToken, checkRole(['teacher']), async (req, res): Promise<any> => {
     try {
         const deleted = await LessonModel.deleteOne({ _id: req.params.lessonId });
         return res.status(200).json(deleted);
@@ -98,14 +98,14 @@ userRouter.get('/teachers', validateToken, async (req, res): Promise<any> => {
         console.error((e as Error).message);
         return res.status(500).json({ message: 'Internal server error' });
     }
-}).post('/start-meet', validateToken, checkRole('teacher'), isOwnerLesson, async (req, res): Promise<any> => {
+}).post('/start-meet', validateToken, checkRole(['teacher']), isOwnerLesson, async (req, res): Promise<any> => {
     try {
         const lesson = await LessonModel.findByIdAndUpdate(
             req.body.id,
             { isOpen: true },
             { new: true }
         );
-        if(!lesson) return res.status(404).json({message: "Could not find lesson"});
+        if (!lesson) return res.status(404).json({ message: "Could not find lesson" });
         return res.status(200).json({});
     } catch (e) {
         console.error((e as Error).message);

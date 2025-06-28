@@ -39,7 +39,7 @@ export default class UserService {
             Cookies.set("user", JSON.stringify(data.user));
             return data.user;
         }
-        throw new Error("Login failed: user data not returned.");
+        throw new Error(data.message);
     }
 
     async register(user: Omit<IUser, '_id'>): Promise<IUser> {

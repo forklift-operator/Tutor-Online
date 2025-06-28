@@ -64,12 +64,8 @@ export default function App() {
   }
 
   const handleLogin = async (credentials: Credentials): Promise<void> => {
-    try {
       const user = await userService.login(credentials);
       setUser(user);
-    } catch (e) {
-      console.error('Login error: ', (e as Error).message);
-    }
   }
 
   const handleRegister = async (user: Omit<IUser,'_id'>): Promise<void> => {
@@ -128,11 +124,10 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path='/' element={<Layout user={user} onLogout={handleLogout}/>}>
+        <Route path='/' element={<Layout user={user} onLogout={handleLogout} onLogin={handleLogin} onRegister={handleRegister}/>}>
           <Route index element={<Home/>}/>
 
           {/* auth */}
-          <Route path="/login" element={<Login onLogin={handleLogin}/>} />
           <Route path="/register" element={ <Register onRegister={handleRegister}/> } />
 
           {/* admin */}

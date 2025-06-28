@@ -13,13 +13,19 @@ export default function Courses({ fetchCourses }: Props) {
     const [courses, setCourses] = useState<ICourse[]>([])
     
     const fetch = async (filter?: Record<string, any>) => {
-        const courses = await fetchCourses('course', filter);
-        setCourses(courses);
+        try {
+            const courses = await fetchCourses('course', filter);
+            setCourses(courses);
+        } catch (e) {
+            console.error(e);
+        }
     }
     
     useEffect(() => {
         fetch();
     }, [])
+
+    
     
   return (
     <div>

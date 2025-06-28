@@ -1,16 +1,16 @@
 import { useState,  type FormEvent } from 'react'
 import { useNavigate } from 'react-router';
-import type { UserCreateDTO } from '../../dtos/userDTO';
+import type { IUser } from '../../../../server/src/db/model/userModel';
 
 type Props = {
-    onRegister: (user: UserCreateDTO) => Promise<void>,
+    onRegister: (user: Omit<IUser,'_id'>) => Promise<void>,
 }
 
 export default function Register({ onRegister }: Props) {
     const [username, setUsername] = useState<string>("");
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
-    const [profile_pic, setProfilePic] = useState<string>("");
+    const [imageUrl, setImageUrl] = useState<string>("");
     const [name, setName] = useState<string>("");
     const [roles, setRoles] = useState<string[]>(['guest']);
     const navigate = useNavigate();
@@ -18,7 +18,7 @@ export default function Register({ onRegister }: Props) {
 
     const handleSubmit = (event: FormEvent) => {
         event.preventDefault();
-        const user: UserCreateDTO = { name, username, password, email, profile_pic, roles, createdAt: new Date() }
+        const user: Omit<IUser,'_id'> = { name, username, password, email, imageUrl, roles, createdAt: new Date() }
         onRegister(user);
         navigate("/");
     }
@@ -62,8 +62,8 @@ export default function Register({ onRegister }: Props) {
             <label>Profile Pic:
                 <input
                 type="text" 
-                value={profile_pic}
-                onChange={(e) => setProfilePic(e.target.value)}
+                value={imageUrl}
+                onChange={(e) => setImageUrl(e.target.value)}
                 />
             </label>
 

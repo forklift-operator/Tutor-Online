@@ -66,12 +66,12 @@ export default class ApiClient {
             }
         };
         const res = await fetch(url, mergedOptions);
-        // if (!res.ok) {
-        //     const err: HTTPResponse = await res.json();
-        //     if (res.status < 500) {
-        //         throw err;
-        //     } else console.error(err.message)
-        // }
+        if (!res.ok) {
+            const err: HTTPResponse = await res.json();
+            if (res.status < 500) {
+                throw err;
+            } else console.error(err.message)
+        }
         return res.json();
     }
 

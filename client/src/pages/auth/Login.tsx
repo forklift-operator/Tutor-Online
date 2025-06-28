@@ -1,45 +1,87 @@
-import { useState, type FormEvent } from 'react'
-import { useNavigate } from 'react-router';
-import type { Credentials } from '../../common/commonTypes';
 
+
+import type { Credentials } from "@/common/commonTypes";
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { useState } from "react";
 
 type Props = {
     onLogin: (credentials: Credentials) => Promise<void>;
+    className?: string;
 }
 
-export default function Login({ onLogin }: Props) {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    // const [error, setError] = useState("")
-    const navigate = useNavigate();
-    
-    const handleSubmit = (event: FormEvent) => {
-        event.preventDefault();
-        onLogin({username, password});
-        navigate('/')
+export default function Login({ onLogin, className }:Props) {
+  const [open, setOpen] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null)
+  const handleSubmit = async () => {
+    try {
+        await onLogin({ username, password });
+        setOpen(false);
+        setTimeout(() => {
+          setUsername('');
+          setPassword('');
+        }, 1000);
+    } catch (e) {
+        setError((e as Error).message)
     }
-    
-  return (
-    <div className='Login section'>
-        <form className="form" onSubmit={(e) => handleSubmit(e)}>
-            <label>Enter your username:
-                <input
-                type="text" 
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                />
-            </label>
+  };
 
-            <label>Password:
-                <input
-                type="password" 
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <form onSubmit={handleSubmit}>
+        <DialogTrigger asChild>
+          <Button>Login</Button>
+        </DialogTrigger>
+        <DialogContent className={`sm:max-w-[425px] ${className}`} >
+          <DialogHeader>
+            <DialogTitle className="text-xl">Login</DialogTitle>
+            {error &&
+            <Button variant={'destructive'} disabled>{error}</Button>
+            }
+          </DialogHeader>
+          <div className="grid gap-4">
+            <div className="grid gap-3">
+              <Label htmlFor="username-1">Username</Label>
+              <Input 
+                id="username-1" 
+                name="username" 
+                onChange={e => setUsername(e.target.value)} 
+                value={username} 
+                placeholder="user123" 
+                required
+              />
+            </div>    <div className="grid gap-3">
+              <Label htmlFor="password-1">Password</Label>
+              <Input 
+                id="password-1" 
+                name="password" 
+                onChange={e => setPassword(e.target.value)} 
+                type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                />
-            </label>
-            
-            <button type='submit'>Sign In</button>
-        </form>
-    </div>
+                placeholder="Your password" 
+                required/>
+            </div>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button onClick={handleSubmit} type="submit">Login</Button>
+          </DialogFooter>
+        </DialogContent>
+      </form>
+    </Dialog>
   )
 }

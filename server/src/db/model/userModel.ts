@@ -17,7 +17,7 @@ interface IUser {
     bio?: string;
     password: string;
     email: string;
-    imageURL?: string;
+    imageUrl?: string;
     roles: string[];
     createdAt?: Date;
 }

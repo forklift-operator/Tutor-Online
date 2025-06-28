@@ -45,7 +45,7 @@ export default function UserCard({ user, myId, handleDelete, handleEdit, adminVi
                         target.onerror = null;
                         target.src = defaultUserImg;
                     }}
-                    src={user.imageURL || defaultUserImg}
+                    src={user.imageUrl || defaultUserImg}
                     alt='img'
                     />
                     <AvatarFallback>U</AvatarFallback>
