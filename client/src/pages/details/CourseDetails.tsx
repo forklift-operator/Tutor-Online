@@ -13,13 +13,13 @@ import { UpdateCourseModal } from "@/components/misc/UpdateCourseModal";
 type Props = { 
     onFetchCourse: (entityType: string, id: string) => Promise<ICourse>,
     onFetchLessons: (entityType: string, filter?: Record<string, any>) => Promise<ILesson[]>,
-    onUpdate?: (entityType: string, updated: ICourse) => Promise<ICourse>,
+    onUpdateCourse?: (entityType: string, updated: ICourse) => Promise<ICourse>,
     onCreateLesson: (entityType: string, entity: Omit<ILesson, '_id'>) => Promise<ILesson>,
     onDeleteLesson: (entityType: string, id: string) => Promise<ILesson>,
     onStartMeet?: (id: string) => Promise<void>;
 }
 
-export default function CourseDetails({ onFetchCourse, onFetchLessons, onUpdate, onCreateLesson, onDeleteLesson, onStartMeet}: Props) {
+export default function CourseDetails({ onFetchCourse, onFetchLessons, onUpdateCourse, onCreateLesson, onDeleteLesson, onStartMeet}: Props) {
     const { id } = useParams<string>();
     const [course, setCourse] = useState<ICourse | null>(null);
     const [lessons, setLessons] = useState<ILesson[]>([])
@@ -48,10 +48,8 @@ export default function CourseDetails({ onFetchCourse, onFetchLessons, onUpdate,
 
     const updateCourse = async (updatedCourse: ICourse) => {
         try {
-            if (!onUpdate) return;
-            const updated = await onUpdate('course', updatedCourse);  
-            console.log(updated);
-            
+            if (!onUpdateCourse) return;
+            const updated = await onUpdateCourse('course', updatedCourse);  
             setCourse(updated);
         } catch (e) {
             console.error((e as Error).message);
@@ -117,7 +115,7 @@ export default function CourseDetails({ onFetchCourse, onFetchLessons, onUpdate,
 
         <h2 className="absolute flex items-center gap-5 bottom-0 left-0 text-[40px] md:text-[80px] font-bold text-white z-10 px-5 pb-4 leading-none">{course.name}</h2>
 
-        {owner && onUpdate &&
+        {owner && onUpdateCourse &&
             <UpdateCourseModal className="absolute top-2 right-2 z-100 " course={course} onUpdateCourse={updateCourse}></UpdateCourseModal>
         }
         
