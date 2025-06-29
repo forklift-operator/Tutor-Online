@@ -1,8 +1,5 @@
-import { Link } from 'react-router'
-// import "./UserCard.css"
-// import Report from './Report'
 import type { IUser } from '../../../../server/src/db/model/userModel'
-import { Card, CardDescription, CardFooter, CardTitle } from '../ui/card';
+import { Card, CardDescription, CardTitle } from '../ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { defaultUserImg } from '@/common/commonTypes';
 import { Label } from '../ui/label';
@@ -12,17 +9,20 @@ import { UserCardActionsDropdown } from '../misc/UserCardActionsDropdown';
 type Props = {
   user: IUser,
   myId: string,
-  handleDelete?: (userId: string) => Promise<void>,
-  handleEdit?: (updatedUser: IUser) => Promise<void>,
+  onDelete?: (userId: string) => Promise<void>,
+  onEditUser?: (newUser: IUser) => Promise<void>;
   adminView?: boolean,
 }
 
-export default function UserCard({ user, myId, handleDelete, handleEdit, adminView=false }: Props) {
+export default function UserCard({ user, myId, onDelete, onEditUser, adminView=false }: Props) {
 
   return (
         <Card className='bg-background gap-5 text-foreground pt-0 overflow-hidden py-5 px-5'>
             {adminView ?
               <div className="flex flex-row gap-2">
+                {myId === user._id.toString() && 
+                  <Badge variant={'outline'}>YOU</Badge>
+                }
                 {user.roles.includes('admin') && 
                   <Badge variant={'destructive'}>admin</Badge>
                 }
@@ -52,7 +52,7 @@ export default function UserCard({ user, myId, handleDelete, handleEdit, adminVi
               </Avatar>
               <div className="flex flex-col w-full">
                 <CardDescription className='text-xs'>{user.username}</CardDescription>
-                <CardTitle className='text-xl'>{user.username}</CardTitle>
+                <CardTitle className='text-xl'>{user.name}</CardTitle>
                 <CardDescription className='text-xs underline'>{user.email}</CardDescription>
               </div>
             </div>
@@ -61,8 +61,8 @@ export default function UserCard({ user, myId, handleDelete, handleEdit, adminVi
               <CardDescription className='text-xs'>{user.bio || 'No bio provided'}</CardDescription>
             </Label>
 
-            {handleDelete && 
-              <UserCardActionsDropdown  onDelete={handleDelete} userId={user._id.toString()}/>
+            {onDelete && myId !== user._id.toString() && onEditUser &&
+              <UserCardActionsDropdown  onDelete={onDelete} onEditUser={onEditUser} user={user}/>
             }
         </Card>
   )

@@ -8,11 +8,11 @@ import { Input } from '@/components/ui/input';
 
 type Props = {
     fetchUsers: (entityType: string, filter?: Record<string, any>) => Promise<IUser[]>,
-    handleDelete: (entityType: string ,userId: string) => Promise<IUser>,
-    handleEdit?: (updatedUser: IUser) => Promise<void>,
+    onDelete: (entityType: string ,userId: string) => Promise<IUser>,
+    onEditUser?: (entityType: string, updated: IUser) => Promise<IUser>,
 }
 
-export default function Users({ fetchUsers, handleDelete }: Props) {
+export default function Users({ fetchUsers, onDelete, onEditUser }: Props) {
     const [users, setUsers] = useState<IUser[]>([]);
     const [loading, setLoading] = useState(true)
     const myId = (JSON.parse(Cookies.get('user') || '') as IUser)._id;
@@ -29,8 +29,22 @@ export default function Users({ fetchUsers, handleDelete }: Props) {
 
     const deleteUser = async (userId: string): Promise<void> => {
         try {
-            await handleDelete('user' ,userId);
+            await onDelete('user' ,userId);
             setUsers(users.filter(user => user._id.toString() !== userId));
+        } catch (e) {
+            console.error((e as Error).message);
+        }
+    }
+    
+    const updateUser = async (updatedUser: IUser) => {
+        
+        try {
+            if (!onEditUser) return;
+            console.log('asd');
+            const updated = await onEditUser('user', updatedUser);
+            console.log(updated);
+            
+            setUsers(users.map(user => user._id === updatedUser._id ? { ...user, ...updatedUser } : user));
         } catch (e) {
             console.error((e as Error).message);
         }
@@ -64,13 +78,13 @@ export default function Users({ fetchUsers, handleDelete }: Props) {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {users.map((user: IUser) => {
                 return (
-                    <UserCard 
-                    key={user._id.toString()}
-                    user={user}
-                    myId={myId.toString()}
-                    adminView={true}
-                    handleDelete={deleteUser}
-                    // handleEdit={handleEdit}
+                    <UserCard
+                        key={user._id.toString()}
+                        user={user}
+                        myId={myId.toString()}
+                        adminView={true}
+                        onDelete={deleteUser}
+                        onEditUser={updateUser}
                     />
                 );
             })}

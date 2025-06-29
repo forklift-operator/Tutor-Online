@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import type { IUser } from "../../../../server/src/db/model/userModel";
 import type { Credentials } from "@/common/commonTypes";
 import Login from "@/pages/auth/Login";
+import Register from "@/pages/auth/Register";
 
 type Props = {
     user: IUser | null;
@@ -54,11 +55,7 @@ export default function Header({ user, onLogout, onLogin, onRegister}: Props) {
         ) : (
           <>
             <Login onLogin={onLogin}/>
-            <Button 
-                variant={window.location.pathname === '/register' ? 'secondary' : 'default'}
-                onClick={() => navigate('/register')}>
-                  Register
-            </Button>
+            <Register onRegister={onRegister}/>
           </>
         )}
       </nav>

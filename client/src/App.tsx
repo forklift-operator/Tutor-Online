@@ -69,14 +69,8 @@ export default function App() {
   }
 
   const handleRegister = async (user: Omit<IUser,'_id'>): Promise<void> => {
-    try {
       const new_user = await userService.register(user);
-      if (new_user) {
-        setUser(new_user);
-      }
-    } catch (e) {
-      console.error('Register error: ', (e as Error).message);
-    }
+      setUser(new_user);
   }
 
   async function fetchEntitys<T>(entityType: string, filter?: Record<string, any>): Promise<T[]> {
@@ -127,14 +121,11 @@ export default function App() {
         <Route path='/' element={<Layout user={user} onLogout={handleLogout} onLogin={handleLogin} onRegister={handleRegister}/>}>
           <Route index element={<Home/>}/>
 
-          {/* auth */}
-          <Route path="/register" element={ <Register onRegister={handleRegister}/> } />
-
           {/* admin */}
           <Route>
             <Route element={<ProtectedRoute user={user!} isAllowed={!!user && user.roles.includes('admin')} apiClient={apiClient}/>}>
-              <Route path="users" element={<Users fetchUsers={fetchEntitys} handleDelete={deleteEntity}/>} />
-              <Route path="users/:id" element={<Users fetchUsers={fetchEntitys} handleDelete={deleteEntity}/>} />
+              <Route path="users" element={<Users fetchUsers={fetchEntitys} onDelete={deleteEntity} onEditUser={updateEntity}/>} />
+              <Route path="users/:id" element={<Users fetchUsers={fetchEntitys} onDelete={deleteEntity} onEditUser={updateEntity}/>} />
             </Route>
           </Route>
 
@@ -143,13 +134,20 @@ export default function App() {
             <Route path='courses' element={ <Courses fetchCourses={fetchEntitys}/>} />
             <Route path='teachers' element={ <Teachers fetchTeachers={fetchEntitys}/>} />
             <Route path='teachers/:id' element={<UserDetails onFetch={fetchEntity} onUpdate={updateEntity} view='USER' />} />
-            <Route path="/courses/:id" element={ <CourseDetails onFetchCourse={fetchEntity} onDeleteLesson={deleteEntity} onFetchLessons={fetchEntitys} onCreateLesson={createEntity} onUpdate={updateEntity} onStartMeet={handleStartMeet}/> } />
+            <Route path="courses/:id" element={ <CourseDetails onFetchCourse={fetchEntity} onDeleteLesson={deleteEntity} onFetchLessons={fetchEntitys} onCreateLesson={createEntity} onUpdateCourse={updateEntity} onStartMeet={handleStartMeet}/> } />
           </Route>
 
           {/* teacher */}
-          <Route element={<ProtectedRoute user={user!} isAllowed={!!user && user.roles.includes('teacher')} apiClient={apiClient}/>}>
-            <Route path="/courses/my" element={ <MyCoursesTeacher onFetchCourses={fetchEntitys} onCreate={createEntity} onDelete={deleteEntity}/> } />
-          </Route>
+          {user && user.roles.includes('teacher') ? 
+            <Route element={<ProtectedRoute user={user} apiClient={apiClient}/>}>
+              <Route path="/courses/my" element={ <MyCoursesTeacher onFetchCourses={fetchEntitys} onCreate={createEntity} onDelete={deleteEntity}/> } />
+            </Route>
+          :
+            <Route element={<ProtectedRoute user={user!} apiClient={apiClient}/>}>
+              <Route path="/courses/my" element={ <MyCoursesTeacher onFetchCourses={fetchEntitys} onCreate={createEntity} onDelete={deleteEntity}/> } />
+            </Route>
+          }
+
 
           {/* <Route path="/meet/:lessonId" element={<ValidateMeet />} /> */}
           <Route element={<ProtectedRoute user={user!} apiClient={apiClient}/>}>
